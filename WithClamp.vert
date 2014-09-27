@@ -132,8 +132,8 @@ void AmbientCube(inout ShaderState s) {
 uniform vec4 uBones[3 * MAX_USED_BONES]; // passed as 3x4 matrices, row-major, to save constant registers
 
 void SkeletonPoseWeighted3(inout ShaderState s) {
-    lowp vec3 boneIndices = vBoneIndices.xyz;
-    ivec3 i = ivec3(vBoneIndices) * 3;
+    lowp vec3 boneIndices = max(vec3(0), vBoneIndices.xyz);
+    ivec3 i = ivec3(boneIndices) * 3;
     vec4 row0 = uBones[i.x]   * vBoneWeights.x
               + uBones[i.y]   * vBoneWeights.y
               + uBones[i.z]   * vBoneWeights.z;
@@ -154,7 +154,8 @@ void SkeletonPoseWeighted3(inout ShaderState s) {
 }
 void Transform(inout ShaderState s) {
     s.normalModel = normalize(s.normalModel);
-    s.normalWorld = normalize(uNormalMatrix * vec4(s.normalModel,0.0)).xyz;
+    s.normalWorld = normalize(transpose(uNormalMatrix)
+ * vec4(s.normalModel,0.0)).xyz;
     s.positionWorld = uModelMatrix * s.positionModel;
     s.positionView = uViewMatrix * s.positionWorld;
     s.positionProj = uProjMatrix * s.positionView;

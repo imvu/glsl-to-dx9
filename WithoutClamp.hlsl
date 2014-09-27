@@ -184,7 +184,7 @@ void _SkeletonPoseWeighted3(inout _ShaderState _s)
 {
 	{
 		float3 _boneIndices = _vBoneIndices.xyz;
-			int3 _i = (ivec3(int4(round(_vBoneIndices))) * 3);
+			int3 _i = (ivec3(int4(_vBoneIndices)) * 3);
 			float4 _row0 = (((_uBones[int(clamp(float(_i.x), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float(_i.y), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float(_i.z), 0.0, 203.0))] * _vBoneWeights.z));
 			float4 _row1 = (((_uBones[int(clamp(float((_i.x + 1)), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float((_i.y + 1)), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float((_i.z + 1)), 0.0, 203.0))] * _vBoneWeights.z));
 			float4 _row2 = (((_uBones[int(clamp(float((_i.x + 2)), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float((_i.y + 2)), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float((_i.z + 2)), 0.0, 203.0))] * _vBoneWeights.z));

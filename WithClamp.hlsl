@@ -165,7 +165,7 @@ void _initStateColor(inout _ShaderState _s)
 void _finishStateEye(inout _ShaderState _s)
 {
 	{
-		(_s._eye = (_uInvViewMatrix[3].xyz - _s._positionWorld.xyz));
+		(_s._eye = (transpose(_uInvViewMatrix)[3].xyz - _s._positionWorld.xyz));
 	}
 }
 ;
@@ -183,24 +183,24 @@ void _AmbientCube(inout _ShaderState _s)
 void _SkeletonPoseWeighted3(inout _ShaderState _s)
 {
 	{
-		float3 _boneIndices = clamp(_vBoneIndices.xyz, 0.0, 67.0);
-			int3 _i = (ivec3(int4(_vBoneIndices)) * 3);
+		float3 _boneIndices = max(_vBoneIndices.xyz, float3(0.0, 0.0, 0.0));
+                int3 _i = (int3(_boneIndices * float3(3.0, 3.0, 3.0)));
 			float4 _row0 = (((_uBones[int(clamp(float(_i.x), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float(_i.y), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float(_i.z), 0.0, 203.0))] * _vBoneWeights.z));
 			float4 _row1 = (((_uBones[int(clamp(float((_i.x + 1)), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float((_i.y + 1)), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float((_i.z + 1)), 0.0, 203.0))] * _vBoneWeights.z));
 			float4 _row2 = (((_uBones[int(clamp(float((_i.x + 2)), 0.0, 203.0))] * _vBoneWeights.x) + (_uBones[int(clamp(float((_i.y + 2)), 0.0, 203.0))] * _vBoneWeights.y)) + (_uBones[int(clamp(float((_i.z + 2)), 0.0, 203.0))] * _vBoneWeights.z));
 			(_s._normalModel = vec3(dot(_row0.xyz, _s._normalModel), dot(_row1.xyz, _s._normalModel), dot(_row2.xyz, _s._normalModel)));
-		(_s._positionModel.xyz = vec3(dot(_row0, _s._positionModel), dot(_row1, _s._positionModel), dot(_row2, _s._positionModel)));
+		(_s._positionModel = float4(dot(_row0, _s._positionModel), dot(_row1, _s._positionModel), dot(_row2, _s._positionModel), 1));
 	}
 }
 ;
 void _Transform(inout _ShaderState _s)
 {
 	{
-		(_s._normalModel = normalize(_s._normalModel));
-		(_s._normalWorld = normalize(mul(transpose(_uNormalMatrix), vec4(_s._normalModel, 0.0))).xyz);
-		(_s._positionWorld = mul(transpose(_uModelMatrix), _s._positionModel));
-		(_s._positionView = mul(transpose(_uViewMatrix), _s._positionWorld));
-		(_s._positionProj = mul(transpose(_uProjMatrix), _s._positionView));
+		(_s._normalModel = _s._normalModel);
+		(_s._normalWorld = normalize(mul(_uNormalMatrix, vec4(_s._normalModel, 0.0))).xyz);
+		(_s._positionWorld = mul(_uModelMatrix, _s._positionModel));
+		(_s._positionView = mul(_uViewMatrix, _s._positionWorld));
+		(_s._positionProj = mul(_uProjMatrix, _s._positionView));
 	}
 }
 ;
